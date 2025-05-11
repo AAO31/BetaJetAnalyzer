@@ -1,15 +1,13 @@
 // -*- C++ -*-
 //
-// Package:    JetAnalysis/MyJetAnalyzerBeta
+// Package:    JetAnalyzerBeta/MyJetAnalyzerBeta
 // Class:      MyJetAnalyzerBeta
 // 
-/**\class MyJetAnalyzerBeta MyJetAnalyzerBeta.cc JetAnalysis/MyJetAnalyzerBeta/plugins/MyJetAnalyzerBeta.cc
+/**\class MyJetAnalyzerBeta MyJetAnalyzerBeta.cc JetAnalyzerBeta/MyJetAnalyzerBeta/plugins/MyJetAnalyzerBeta.cc
 
- Description: Analyzer for basic jet properties (pt, eta, phi, mass)
+ Description: [one line class summary]
  Implementation:
-     - Uses PFJets collection
-     - Configurable jet pt and eta cuts
-     - Produces standard jet histograms
+     [Notes on implementation]
 */
 //
 // Original Author:  
@@ -18,34 +16,28 @@
 
 // system include files
 #include <memory>
-#include <string>
 
-// framework includes
+// user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/one/EDAnalyzer.h"
+#include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 // jet data formats
 #include "DataFormats/JetReco/interface/PFJet.h"
 #include "DataFormats/JetReco/interface/PFJetCollection.h"
 
 // ROOT includes
-#include "TH1D.h"
-#include "TH2D.h"
-#include "TFileService.h"
+#include "TH1.h"
+#include "TH2.h"
 
-using namespace std;
-using namespace edm;
-using namespace reco;
-
-class MyJetAnalyzerBeta : public edm::one::EDAnalyzer<edm::one::SharedResources> {
+class MyJetAnalyzerBeta : public edm::EDAnalyzer {
    public:
       explicit MyJetAnalyzerBeta(const edm::ParameterSet&);
       ~MyJetAnalyzerBeta() override;
-      
       static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
    private:
@@ -53,99 +45,50 @@ class MyJetAnalyzerBeta : public edm::one::EDAnalyzer<edm::one::SharedResources>
       void analyze(const edm::Event&, const edm::EventSetup&) override;
       void endJob() override;
 
-      // Input tokens
-      const edm::EDGetTokenT<PFJetCollection> jetsToken_;
+      edm::EDGetTokenT<reco::PFJetCollection> jetsToken_;
+      edm::Service<TFileService> fs;
       
-      // Configuration parameters
-      const double jetPtMin_;
-      const double jetEtaMax_;
-      const std::string jetAlgo_;
-      
-      // Histograms
-      TH1D* h_jetPt;
-      TH1D* h_jetEta;
-      TH1D* h_jetPhi;
-      TH1D* h_jetMass;
-      TH1D* h_nJets;
-      TH2D* h_jetEtaVsPhi;
-      TH1D* h_jetCharge;
+      TH1D *h_jetPt;
+      TH1D *h_jetEta;
+      TH1D *h_jetPhi;
+      TH1D *h_jetMass;
+      TH1D *h_nJets;
 };
 
-//
-// constructors and destructor
-//
-MyJetAnalyzerBeta::MyJetAnalyzerBeta(const edm::ParameterSet& iConfig):
-  jetsToken_(consumes<PFJetCollection>(iConfig.getParameter<InputTag>("jets"))),
-  jetPtMin_(iConfig.getParameter<double>("jetPtMin")),
-  jetEtaMax_(iConfig.getParameter<double>("jetEtaMax")),
-  jetAlgo_(iConfig.getParameter<string>("jetAlgo"))
+MyJetAnalyzerBeta::MyJetAnalyzerBeta(const edm::ParameterSet& iConfig) :
+  jetsToken_(consumes<reco::PFJetCollection>(iConfig.getParameter<edm::InputTag>("jets")))
 {
-  usesResource("TFileService");
-  
-  // Initialize histograms
-  edm::Service<TFileService> fs;
-  
-  h_jetPt = fs->make<TH1D>("jetPt", "Jet p_{T}; p_{T} [GeV]; Jets", 200, 0, 1000);
-  h_jetEta = fs->make<TH1D>("jetEta", "Jet #eta; #eta; Jets", 100, -5.0, 5.0);
-  h_jetPhi = fs->make<TH1D>("jetPhi", "Jet #phi; #phi [rad]; Jets", 100, -M_PI, M_PI);
-  h_jetMass = fs->make<TH1D>("jetMass", "Jet mass; mass [GeV]; Jets", 100, 0, 200);
-  h_nJets = fs->make<TH1D>("nJets", "Jets per event; Number of jets; Events", 50, 0, 50);
-  h_jetEtaVsPhi = fs->make<TH2D>("jetEtaVsPhi", "Jet #eta vs #phi; #eta; #phi [rad]", 
-                                 100, -5.0, 5.0, 100, -M_PI, M_PI);
-  h_jetCharge = fs->make<TH1D>("jetCharge", "Jet charge; Charge; Jets", 21, -10.5, 10.5);
+  h_jetPt = fs->make<TH1D>("jetPt","Jet p_{T};p_{T} (GeV);Jets",100,0,500);
+  h_jetEta = fs->make<TH1D>("jetEta","Jet #eta;#eta;Jets",100,-5,5);
+  h_jetPhi = fs->make<TH1D>("jetPhi","Jet #phi;#phi;Jets",100,-3.1416,3.1416);
+  h_jetMass = fs->make<TH1D>("jetMass","Jet mass;mass (GeV);Jets",100,0,200);
+  h_nJets = fs->make<TH1D>("nJets","Number of jets per event;N_{jets};Events",50,0,50);
 }
 
 MyJetAnalyzerBeta::~MyJetAnalyzerBeta() {}
 
-//
-// member functions
-//
-
 void MyJetAnalyzerBeta::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
-  Handle<PFJetCollection> jets;
+  edm::Handle<reco::PFJetCollection> jets;
   iEvent.getByToken(jetsToken_, jets);
-
-  if (!jets.isValid()) {
-    edm::LogError("MyJetAnalyzerBeta") << "Invalid jet collection!" << endl;
-    return;
-  }
-
-  int nSelectedJets = 0;
   
-  for (const auto& jet : *jets) {
-    // Apply selection cuts
-    if (jet.pt() < jetPtMin_) continue;
-    if (fabs(jet.eta()) > jetEtaMax_) continue;
-    
-    // Fill histograms
+  int nJets = 0;
+  for(const auto& jet : *jets) {
     h_jetPt->Fill(jet.pt());
     h_jetEta->Fill(jet.eta());
     h_jetPhi->Fill(jet.phi());
     h_jetMass->Fill(jet.mass());
-    h_jetEtaVsPhi->Fill(jet.eta(), jet.phi());
-    h_jetCharge->Fill(jet.charge());
-    
-    nSelectedJets++;
+    nJets++;
   }
-  
-  h_nJets->Fill(nSelectedJets);
-  
-  LogDebug("MyJetAnalyzerBeta") << "Selected " << nSelectedJets << " jets (from " 
-                               << jets->size() << " total jets)";
+  h_nJets->Fill(nJets);
 }
 
 void MyJetAnalyzerBeta::beginJob() {}
-
 void MyJetAnalyzerBeta::endJob() {}
 
 void MyJetAnalyzerBeta::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   edm::ParameterSetDescription desc;
-  desc.add<InputTag>("jets", InputTag("ak4PFJets"));
-  desc.add<double>("jetPtMin", 30.0);
-  desc.add<double>("jetEtaMax", 2.5);
-  desc.add<string>("jetAlgo", "AK4");
-  descriptions.add("myJetAnalyzerBeta", desc);
+  desc.add<edm::InputTag>("jets",edm::InputTag("ak4PFJets"));
+  descriptions.add("myJetAnalyzerBeta",desc);
 }
 
-// Define this as a plug-in
 DEFINE_FWK_MODULE(MyJetAnalyzerBeta);
