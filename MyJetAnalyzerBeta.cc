@@ -21,5 +21,5 @@ void MyJetAnalyzerBeta::analyze(const edm::Event& iEvent, const edm::EventSetup&
     std::cout << "Procesando evento: " << iEvent.id().event() << std::endl;
 }
 
-// Macro final (debe estar después de la definicion completa de la clase)
+// Macro final (debe estar despues de la definicion completa de la clase)
 DEFINE_FWK_MODULE(MyJetAnalyzerBeta);
