@@ -7,7 +7,7 @@ process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10))
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:909488FF-8D72-E211-893B-0026189438EF.root'  # Reemplazar con tu archivo
+        'file:909488FF-8D72-E211-893B-0026189438EF.root'  # Reemplazar con archivo a analizar
     )
 )
 
