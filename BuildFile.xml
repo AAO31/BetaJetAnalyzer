@@ -1,10 +1,25 @@
-<use name="FWCore/Framework"/>
-<use name="FWCore/ParameterSet"/>
-<use name="FWCore/ServiceRegistry"/>
-<use name="CommonTools/UtilAlgos"/>
-<use name="DataFormats/JetReco"/>
-<use name="root"/>
-<use name="rootgraphics"/>
-<export>
-  <lib name="1"/>
-</export>
+<library name="JetAnalyzerBetaMyJetAnalyzerBetaPlugins" file="*.cc">
+  <!-- Dependencias del framework CMSSW -->
+  <use name="FWCore/Framework"/>
+  <use name="FWCore/ParameterSet"/>
+  <use name="FWCore/ServiceRegistry"/>
+  
+  <!-- Para TFileService y utilidades -->
+  <use name="CommonTools/UtilAlgos"/>
+  
+  <!-- Formatos de datos para jets -->
+  <use name="DataFormats/JetReco"/>
+  
+  <!-- Dependencias de ROOT -->
+  <use name="root"/>
+  <use name="rootcore"/>
+  <use name="rootgraphics"/>
+  
+  <!-- Flags de compilación -->
+  <flags EDM_PLUGIN="1"/>
+  
+  <!-- Exportar como librería de plugins -->
+  <export>
+    <lib name="1"/>
+  </export>
+</library>
