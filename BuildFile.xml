@@ -1,17 +1,7 @@
-<buildfile>
 <use name="FWCore/Framework"/>
-<use name="FWCore/PluginManager"/>
 <use name="FWCore/ParameterSet"/>
-<use name="DataFormats/EgammaCandidates"/>
+<use name="FWCore/PluginManager"/>
 <use name="CommonTools/UtilAlgos"/>
 <use name="FWCore/ServiceRegistry"/>
-<use name="DataFormats/MuonReco"/>
-<use name="DataFormats/TrackReco"/>
-<use name="RecoMuon/TrackingTools"/>
-<use name="RecoEgamma/EgammaTools"/>
-<use name="EgammaAnalysis/ElectronTools"/>
-<use name="CondFormats/JetMETObjects"/>
-<use name="DataFormats/PatCandidates"/>
-<use name="HLTrigger/HLTcore"/>
+<use name="DataFormats/JetReco"/>
 <flags EDM_PLUGIN="1"/>
-</buildfile>
