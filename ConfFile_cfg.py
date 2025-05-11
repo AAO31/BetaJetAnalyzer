@@ -1,4 +1,4 @@
-import FWCore.ParameterSet.Config as cms #Importa las herramientas de configuración de CMSSW (cms)
+import FWCore.ParameterSet.Config as cms #Importa las herramientas de configuracion de CMSSW (cms)
 
 process = cms.Process("JETANALYSIS") #Crea el proceso CMSSW JETANALYSIS (el nombre puede variar)
 
