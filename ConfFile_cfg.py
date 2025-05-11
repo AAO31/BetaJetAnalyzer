@@ -1,9 +1,9 @@
-import FWCore.ParameterSet.Config as cms #Importa las herramientas de configuracion de CMSSW (cms)
+import FWCore.ParameterSet.Config as cms # Importa las herramientas de configuracion de CMSSW 
 
-process = cms.Process("JETANALYSIS") #Crea el proceso CMSSW JETANALYSIS (el nombre puede variar)
+process = cms.Process("JETANALYSIS") # Crea el proceso CMSSW JETANALYSIS 
 
 process.load("FWCore.MessageService.MessageLogger_cfi") # mensajes en consola
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10)) #procesa n eventos (10 en este caso)
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10)) #procesa n eventos 
 
 process.source = cms.Source("PoolSource", # Lee eventos desde archivos ROOT de CMS
     fileNames = cms.untracked.vstring(
