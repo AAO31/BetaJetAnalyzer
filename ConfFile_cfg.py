@@ -1,16 +1,39 @@
-import FWCore.ParameterSet.Config as cms # Importa las herramientas de configuracion de CMSSW 
+import FWCore.ParameterSet.Config as cms # Importa herramientas de configuracion de CMSSW
 
-process = cms.Process("JETANALYSIS") # Crea el proceso CMSSW JETANALYSIS 
+# Configuracion basica del proceso
+process = cms.Process("JETANALYSIS") # Crea el proceso principal
 
-process.load("FWCore.MessageService.MessageLogger_cfi") # mensajes en consola
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10)) #procesa n eventos 
+# Configuracion de mensajes
+process.load("FWCore.MessageService.MessageLogger_cfi") # Habilita mensajes en consola
+process.MessageLogger.cerr.FwkReport.reportEvery = 100 # Mostrar progreso cada 100 eventos
 
-process.source = cms.Source("PoolSource", # Lee eventos desde archivos ROOT de CMS
+# Numero de eventos a procesar (ideal para pruebas)
+process.maxEvents = cms.untracked.PSet(
+    input = cms.untracked.int32(10) # Procesa solo 10 eventos inicialmente
+)
+
+# Configuracion del archivo de entrada
+process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:909488FF-8D72-E211-893B-0026189438EF.root'  # Reemplazar con archivo a analizar
+        'file:input.root'  # Reemplazar con archivo root a analizar
     )
 )
 
-process.myJetAnalyzer = cms.EDAnalyzer('MyJetAnalyzerBeta')
+# Configuracion del servicio para archivos de salida ROOT
+process.TFileService = cms.Service("TFileService",
+    fileName = cms.string('jet_analysis_output.root') # Nombre del archivo de resultados
+)
 
+# Configuracion de analizador personalizado
+process.myJetAnalyzer = cms.EDAnalyzer('MyJetAnalyzerBeta',
+    jetInput = cms.InputTag("ak4PFJets") # Coleccion de jets a analizar
+)
+
+# Secuencia de ejecucion
 process.p = cms.Path(process.myJetAnalyzer)
+
+# Informacion adicional para el usuario
+print "\nConfiguracion lista para analizar jets basicos:"
+print "- Se usara la coleccion:", process.myJetAnalyzer.jetInput.value()
+print "- Resultados se guardaran en:", process.TFileService.fileName.value()
+print "- Numero de eventos a procesar:", process.maxEvents.input.value(), "\n"
