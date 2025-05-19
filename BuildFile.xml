@@ -1,7 +1,15 @@
-<use name="FWCore/Framework"/>
-<use name="FWCore/ParameterSet"/>
-<use name="FWCore/PluginManager"/>
-<use name="CommonTools/UtilAlgos"/>
-<use name="FWCore/ServiceRegistry"/>
-<use name="DataFormats/JetReco"/>
-<flags EDM_PLUGIN="1"/>
+  <use name="FWCore/Framework"/>       <!-- Para EDAnalyzer y manejo de eventos -->
+  <use name="FWCore/ParameterSet"/>    <!-- Para configuracion de parametros -->
+  <use name="FWCore/ServiceRegistry"/> <!-- Para servicios como TFileService -->
+  
+  <!-- Dependencias especificas para el analisis de jets -->
+  <use name="DataFormats/JetReco"/>    <!-- Para reco::PFJet y PFJetCollection -->
+  
+  <!-- Dependencias para ROOT y salida de datos -->
+  <use name="CommonTools/UtilAlgos"/>  <!-- Para TFileService -->
+  <use name="root"/>                   <!-- Para TTree, TH1, etc. -->
+  <use name="rootcore"/>               <!-- Funcionalidades basicas de ROOT -->
+  
+  <!-- Sistema de plugins de CMSSW -->
+  <use name="FWCore/PluginManager"/>   <!-- Para DEFINE_FWK_MODULE -->
+  <flags EDM_PLUGIN="1"/>              <!-- Indica que es un plugin de CMSSW -->
